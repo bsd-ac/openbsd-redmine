@@ -16,8 +16,6 @@ rm_packages:
   - subversion
   - git
   - py3-psycopg2
-  - imagemagick
-  - ghostscript
 
 rm_bundle: "/usr/local/bin/bundle{{ rm_ruby_slug }}"
 rm_gem: "/usr/local/bin/gem{{ rm_ruby_slug }}"
