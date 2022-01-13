@@ -1,3 +1,2 @@
 gem "passenger"
-gem "puma"
 gem "unicorn"
