@@ -75,7 +75,7 @@
   register: secret_updated
 
 - name: migrate database
-  command: "env RAILS_ENV=production GEM_HOME={{ rm_gem_dir }}/ruby/{{ rm_ruby_version }} {{ rm_bundle }} exec rake db:migrate"
+  command: "env RAILS_ENV=production REDMINE_LANG={{ rm_lang }} GEM_HOME={{ rm_gem_dir }}/ruby/{{ rm_ruby_version }} {{ rm_bundle }} exec rake db:migrate"
   args:
     chdir: "{{ rm_app_dir }}"
   become: true
