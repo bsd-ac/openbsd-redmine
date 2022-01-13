@@ -1,7 +1,7 @@
 openbsd-rubywarden
 =========
 
-Role to setup a simple and performant [redmine](https://www.redmine.org/) instance on a Linux/BSD machine.
+Role to setup a simple and performant [redmine](https://www.redmine.org/) instance on an OpenBSD machine.
 
 Role Variables
 --------------

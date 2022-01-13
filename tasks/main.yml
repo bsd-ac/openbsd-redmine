@@ -98,11 +98,13 @@
   become_user: "{{ rm_user }}"
   when: git_updated.changed or db_updated.changed or bundle_updated.changed or secret_updated.changed or rm_rebuild
 
-- name: create unicorn rc script
-  register: rc_status
+- name: create rc scripts
   template:
-    src: redmine_unicorn.j2
-    dest: /etc/rc.d/redmine_unicorn
+    src: "{{ item }}.j2"
+    dest: "/etc/rc.d/{{ item }}"
     owner: root
     group: wheel
     mode: 0755
+  with_items:
+    - "redmine_unicorn"
+    - "redmine_puma"
