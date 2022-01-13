@@ -23,6 +23,18 @@ The significant variables are listed here:
 | **rm_db_testd**     | `redmine_testd` | Database used for testing environment (must exist).                    |
 
 
+RC scripts
+----------
+
+This role installs two [rc(8)](https://man.openbsd.org/rc.8) scripts:
+- `redmine_puma`
+- `redmine_unicorn`
+
+Only use one of them at a time with rcctl:
+```
+root $ rcctl start redmine_puma
+```
+
 Running redmine commands
 -------------------------------
 
