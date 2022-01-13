@@ -1,2 +1,9 @@
 ---
-# vars file for openbsd-rubywarden
+rm_app_dir: "{{ rm_home }}/app"
+rm_gem_dir: "{{ rm_home }}"
+rm_bin_dir: "{{ rm_home }}/ruby/bin"
+
+rm_dirs:
+  - "{{ rm_app_dir }}"
+  - "{{ rm_gem_dir }}"
+  - "{{ rm_bin_dir }}"

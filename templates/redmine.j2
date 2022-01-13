@@ -1,0 +1,29 @@
+#!/bin/ksh
+#
+# {{ ansible_managed }}
+#
+
+env="RAILS_ENV=production PATH={{ rm_bin_dir }}:/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin GEM_HOME={{ rm_gem_dir }}/ruby/{{ rm_ruby_version }} HOME={{ rm_home }}"
+
+daemon="{{ rm_bundle }}"
+daemon_flags="exec rails server webrick -e production"
+daemon_user="{{ rm_user }}"
+
+. /etc/rc.d/rc.subr
+
+rc_start() {
+	${rcexec} "cd {{ rm_app_dir }} && env ${env} ${daemon} ${daemon_flags}"
+}
+
+rc_check() {
+    pgrep -T "${daemon_rtable}" -q -xf "{{ rm_ruby }} bin/rails server webrick -e production"
+}
+
+rc_stop() {
+    pkill -TERM -T "${daemon_rtable}" -xf "{{ rm_ruby }} bin/rails server webrick -e production"
+}
+
+rc_reload=NO
+rc_bg=YES
+
+rc_cmd $1

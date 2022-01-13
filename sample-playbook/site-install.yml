@@ -1,0 +1,11 @@
+---
+- name: Install/Upgrade Excision Mail pre-requisites
+
+  hosts:
+    - mainserver
+
+  vars_files:
+    - vars.yml
+
+  roles:
+    - role: redmine

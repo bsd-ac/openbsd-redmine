@@ -1,80 +1,51 @@
 openbsd-rubywarden
 =========
 
-Role to setup a [rubywarden](https://github.com/jcs/rubywarden) instance on OpenBSD.
-
-Requirements
-------------
-
-- OpenBSD
-
-TODO
-----
-
-- Stop cloning as `root`.
+Role to setup a simple [redmine](https://www.redmine.org/) instance on a Linux/BSD machine.
 
 Role Variables
 --------------
+The significant variables are listed here:
 
-| Variable | Default | Description |
-|--------- | ------- | ----------- |
-| rw_ruby | `2.7` | Ruby version. |
-| rw_port  | `4567`  | The port rubywarden should listen on. |
-| rw_user  | `_rubywarden` | The user that will be added to the system in order to run rubywarden. |
-| rw_home  | `/var/rubywarden` | Home directory for rw_user. |
-| rw_group  | `_rubywarden` | The group that will be added to the system in order to run rubywarden. |
-| rw_signups | `false` | Tells rubywarden to allow signups. Requires a service restart to change. |
-| rw_commit | `master` | Specific commit to be used during the checkout process. |
-| rw_env | `production` | Specify if we are running in production or development mode. |
-| rw_src | `"{{ rw_home }}/src"` | Dir to clone the rubywarden source to. |
-| rw_keepass | `false` | Install gems needed for importing keepass version 1 databases (version 2 is not supported)|
+| Variable        | Default         | Description                                                            |
+|-----------------|-----------------|------------------------------------------------------------------------|
+| rm_version      | `4.2.3`         | Redmine version to use.                                                |
+| rm_ruby_version | `2.7`           | Ruby version to use.                                                   |
+| rm_user         | `_redmine`      | The user that will be added to the system in order to run rubywarden.  |
+| rm_group        | `_redmine`      | The group that will be added to the system in order to run rubywarden. |
+| rm_home         | `/var/redmine`  | Home directory for rm_user.                                            |
+| rm_db_adapter   | `postgresql`    | Which database service to use.                                         |
+| rm_db_user      | `redmine`       | User for database access (must exist).                                 |
+| rm_db_pass      | ``              | Password for database access.                                          |
+| rm_db_prod      | `redmined`      | Database used for production environment (must exist).                 |
+| rm_db_dev       | `redmine_devd`  | Database used for development environment (must exist).                |
+| rm_db_testd     | `redmine_testd` | Database used for testing environment (must exist).                    |
 
-Running rubywarden tool scripts
+
+Running redmine commands
 -------------------------------
 
-The rubywarden scripts are installed in `/var/rubywarden/src/tools/`.
+Redmine gets installed to `{{ rm_home }}/app/`.
 
-To run the scripts you need to set the proper environment so that the ruby gems installed into the local directory work correctly.
+To run the commands as in their tutorials the proper environment variables need to be set, so that the ruby gems installed into the local directories are detected properly.
 
-For example, to import a version 1 keepass database:
-
-```
-RUBYWARDEN_ENV=production \
-	PATH=/bin:/usr/bin:/usr/X11R6/bin:/usr/local/bin:/var/rubywarden/rb/bin \
-	HOME=/var/rubywarden \
-	GEM_HOME=/var/rubywarden/rb/ruby/2.7 \
-	ruby27 tools/keepass_import.rb -f /path/to/keepass.kbdx -u <bw-user>@domain.tld
-```
-
-Example Playbook
-----------------
-
-    - hosts: rw_server
-      roles:
-         - { role: qbit.rubywarden }
-
-Upgrading from ruby-2.6 to ruby-2.7
------------------------------------
-
-Just run the updated role. It automatically upgrades and installs needed packages.
-
-License
--------
+For example, to regenerate secrets for session storage, run the following commands as the user `{{ rm_user }}_`:
 
 ```
-/*
- * Copyright (c) 2018 Aaron Bieber <aaron@bolddaemon.com>
- *
- * Permission to use, copy, modify, and distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- *
- * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
- * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
- * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
- * ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
- * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
- * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
- * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
- */
- ```
+_redmine $ cd /var/redmine/app
+_redmine $ env RAILS_ENV=production \
+PATH=/var/redmine/ruby/bin:/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin \
+HOME=/var/redmine \
+GEM_HOME=/var/redmine/ruby/2.7 \
+bundle27 exec rake generate_secret_token
+```
+
+Sample playbook
+---------------
+
+An example of a playbook is available in [sample-playbook].
+
+Bugs
+----
+
+- Only postgresql is supported for now. Should be updated to allow other databases.

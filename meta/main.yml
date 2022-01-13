@@ -1,7 +1,7 @@
 galaxy_info:
-  role_name: rubywarden
-  author: Aaron Bieber <aaron@bolddaemon.com>
-  description: OpenBSD rubywarden instance
+  role_name: redmine
+  author: Aisha Tammy <floss@bsd.ac>
+  description: OpenBSD redmine instance
 
   license: BSD
 
@@ -10,8 +10,8 @@ galaxy_info:
   platforms:
   - name: OpenBSD
     versions:
-    - 6.1
+    - 7.0
 
-  galaxy_tags: ["openbsd", "rubywarden", "bitwarden"]
+  galaxy_tags: ["openbsd", "redmine"]
 
 dependencies: []

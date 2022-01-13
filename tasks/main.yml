@@ -1,89 +1,100 @@
 ---
-
-- name: Install dependencies
+- name: install dependencies
   package:
-    name: "{{ item }}"
+    name: "{{ rm_packages }}"
     state: installed
-  loop:
-    - git
-    - ruby{{ rw_ruby_slug }}-bundler
-    - sqlite3
 
-- name: add rubywarden group
+- name: add redmine group
   group:
-    name: "{{ rw_group }}"
+    name: "{{ rm_group }}"
     state: present
 
-- name: add rubywarden user
+- name: add redmine user
   user:
-    name: "{{ rw_user }}"
+    name: "{{ rm_user }}"
     state: present
-    home: "{{ rw_home }}"
-    group: "{{ rw_group }}"
-    append: yes
+    comment: redmine daemon user
+    home: "{{ rm_home }}"
+    group: "{{ rm_group }}"
 
-- name: remove rubywarden .ssh directory
+- name: remove redmine .ssh directory
   file:
     state: absent
-    path: "{{ rw_home }}/.ssh"
+    path: "{{ rm_home }}/.ssh"
 
-- name: get rubywarden code
-  register: git_updated
+- name: create redmine directories
+  file:
+    name: "{{ item }}"
+    state: directory
+    mode: "0755"
+    modification_time: preserve
+    access_time: preserve
+  with_items: "{{ rm_dirs }}"
+  become: true
+  become_user: "{{ rm_user }}"
+
+- name: get redmine code
   git:
-    repo: "https://github.com/jcs/rubywarden.git"
-    dest: "{{ rw_src }}"
-    version: "{{ rw_commit }}"
+    repo: "{{ rm_git_url }}"
+    dest: "{{ rm_app_dir }}"
+    version: "{{ rm_version }}"
+  become: true
+  become_user: "{{ rm_user }}"
+  register: git_updated
+
+- name: create database config
+  template:
+    src: database.yml.j2
+    dest: "{{ rm_app_dir }}/config/database.yml"
+    mode: "0600"
+  become: true
+  become_user: "{{ rm_user }}"
+  register: db_updated
 
 - name: run bundler
   bundler:
-    executable: /usr/local/bin/bundle{{ rw_ruby_slug }}
-    gem_path: "{{ rw_home }}/rb"
-    binstub_directory: "{{ rw_home }}/rb/bin"
-    chdir: "{{ rw_src }}"
-    extra_args: "{% if rw_keepass %}--with keepass{% endif %}"
+    executable: "{{ rm_bundle }}"
+    gem_path: "{{ rm_gem_dir }}"
+    binstub_directory: "{{ rm_bin_dir }}"
+    chdir: "{{ rm_app_dir }}"
+    exclude_groups:
+      - development
+      - test
     state: present
+  become: true
+  become_user: "{{ rm_user }}"
+  register: bundle_updated
 
-- name: make the {{ rw_env }} db dir
-  file:
-    path: "{{ rw_src }}/db/{{ rw_env }}"
-    state: directory
-    owner: "{{ rw_user }}"
-    group: "{{ rw_group }}"
-    recurse: yes
-  register: migrate
-
-- name: run db:migrate
-  when: git_updated.changed or migrate.changed
-  command: "env RUBYWARDEN_ENV={{ rw_env }} bundle{{ rw_ruby_slug }} exec rake db:migrate"
+- name: create session storage keys
+  command: "env RAILS_ENV=production GEM_HOME={{ rm_gem_dir }}/ruby/{{ rm_ruby_version }} {{ rm_bundle }} exec rake generate_secret_token"
   args:
-    chdir: "{{ rw_src }}"
+    chdir: "{{ rm_app_dir }}"
+    creates: "{{ rm_app_dir }}/config/initializers/secret_token.rb"
+  become: true
+  become_user: "{{ rm_user }}"
+  register: secret_updated
 
-- name: verify perms {{ rw_env }} db dir
-  file:
-    path: "{{ rw_src }}/db/{{ rw_env }}"
-    state: directory
-    owner: "{{ rw_user }}"
-    group: "{{ rw_group }}"
-    recurse: yes
+- name: migrate database
+  command: "env RAILS_ENV=production GEM_HOME={{ rm_gem_dir }}/ruby/{{ rm_ruby_version }} {{ rm_bundle }} exec rake db:migrate"
+  args:
+    chdir: "{{ rm_app_dir }}"
+  become: true
+  become_user: "{{ rm_user }}"
+  when: git_updated.changed or db_updated.changed or bundle_updated.changed or secret_updated.changed or rm_rebuild
 
-- name: create rubywarden rc script
+- name: load default data
+  command: "env RAILS_ENV=production REDMINE_LANG={{ rm_lang }} GEM_HOME={{ rm_gem_dir }}/ruby/{{ rm_ruby_version }} {{ rm_bundle }} exec rake redmine:load_default_data"
+  args:
+    chdir: "{{ rm_app_dir }}"
+  become: true
+  become_user: "{{ rm_user }}"
+  when: git_updated.changed or db_updated.changed or bundle_updated.changed or secret_updated.changed or rm_rebuild
+
+- name: create rc script
   register: rc_status
   template:
-    src: rubywarden.j2
-    dest: /etc/rc.d/rubywarden
+    src: redmine.j2
+    dest: /etc/rc.d/redmine
     owner: root
     group: wheel
     mode: 0755
-
-- name: enable rubywarden on boot
-  register: started
-  service:
-    name: rubywarden
-    state: started
-    enabled: True
-
-- name: restart rubywarden
-  when: git_updated.changed or (rc_status.changed and not started.changed)
-  service:
-    name: rubywarden
-    state: restarted

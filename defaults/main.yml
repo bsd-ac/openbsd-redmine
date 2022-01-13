@@ -1,15 +1,28 @@
 ---
-# defaults file for openbsd-rubywarden
 
-rw_ruby: 2.7
-rw_port: 4567
-rw_user: _rubywarden
-rw_group: _rubywarden
-rw_signups: False
-rw_commit: master
-rw_env: production
-rw_home: /var/rubywarden
-rw_src: "{{ rw_home }}/src"
-rw_keepass: False
+rm_version: 4.2.3
+rm_git_url: "https://github.com/redmine/redmine"
 
-rw_ruby_slug: "{{ rw_ruby | regex_replace('\\.', '') }}"
+rm_user: _redmine
+rm_group: _redmine
+rm_home: /var/redmine
+
+rm_ruby_version: 2.7
+rm_ruby_slug: "{{ rm_ruby_version | regex_replace('\\.', '') }}"
+
+rm_packages: ["ruby%{{ rm_ruby_version }}", git, py3-psycopg2]
+
+rm_bundle: "/usr/local/bin/bundle{{ rm_ruby_slug }}"
+rm_gem: "/usr/local/bin/gem{{ rm_ruby_slug }}"
+rm_ruby: "/usr/local/bin/ruby{{ rm_ruby_slug }}"
+
+rm_lang: "en"
+
+rm_rebuild: false
+
+rm_db_adapter: "postgresql"
+rm_db_user: "redmine"
+rm_db_host: "localhost"
+rm_db_prod: "redmined"
+rm_db_dev: "redmine_devd"
+rm_db_test: "redmine_testd"
