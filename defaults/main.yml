@@ -10,7 +10,14 @@ rm_home: /var/redmine
 rm_ruby_version: 2.7
 rm_ruby_slug: "{{ rm_ruby_version | regex_replace('\\.', '') }}"
 
-rm_packages: ["ruby%{{ rm_ruby_version }}", git, py3-psycopg2, imagemagick, ghostscript]
+rm_packages:
+  - "ruby%{{ rm_ruby_version }}"
+  - mercurial
+  - subversion
+  - git
+  - py3-psycopg2
+  - imagemagick
+  - ghostscript
 
 rm_bundle: "/usr/local/bin/bundle{{ rm_ruby_slug }}"
 rm_gem: "/usr/local/bin/gem{{ rm_ruby_slug }}"

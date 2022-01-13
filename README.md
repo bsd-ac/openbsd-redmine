@@ -1,20 +1,17 @@
-openbsd-rubywarden
-=========
+openbsd-redmine
+===============
 
-Role to setup a simple and performant [redmine](https://www.redmine.org/) instance on an OpenBSD machine.
+Ansible role to setup a simple and performant [redmine](https://www.redmine.org/) instance on an OpenBSD machine.
 
 Role Variables
 --------------
-The significant variables are listed here:
+
+The significant variables are listed here for brevity. The full list of variables can be found in [defaults/main.yml].
 
 | Variable            | Default         | Description                                                            |
 |---------------------|-----------------|------------------------------------------------------------------------|
 | **rm_version**      | `4.2.3`         | Redmine version to use.                                                |
-| **rm_ruby_version** | `2.7`           | Ruby version to use.                                                   |
-| **rm_user**         | `_redmine`      | The user that will be added to the system in order to run rubywarden.  |
-| **rm_group**        | `_redmine`      | The group that will be added to the system in order to run rubywarden. |
 | **rm_port**         | `8080`          | The port on which to run redmine.                                      |
-| **rm_home**         | `/var/redmine`  | Home directory for rm_user.                                            |
 | **rm_db_adapter**   | `postgresql`    | Which database service to use.                                         |
 | **rm_db_user**      | `redmine`       | User for database access (must exist).                                 |
 | **rm_db_pass**      | `''`            | Password for database access (must be given).                          |
