@@ -1,25 +1,26 @@
 openbsd-rubywarden
 =========
 
-Role to setup a simple [redmine](https://www.redmine.org/) instance on a Linux/BSD machine.
+Role to setup a simple and performant [redmine](https://www.redmine.org/) instance on a Linux/BSD machine.
 
 Role Variables
 --------------
 The significant variables are listed here:
 
-| Variable        | Default         | Description                                                            |
-|-----------------|-----------------|------------------------------------------------------------------------|
-| rm_version      | `4.2.3`         | Redmine version to use.                                                |
-| rm_ruby_version | `2.7`           | Ruby version to use.                                                   |
-| rm_user         | `_redmine`      | The user that will be added to the system in order to run rubywarden.  |
-| rm_group        | `_redmine`      | The group that will be added to the system in order to run rubywarden. |
-| rm_home         | `/var/redmine`  | Home directory for rm_user.                                            |
-| rm_db_adapter   | `postgresql`    | Which database service to use.                                         |
-| rm_db_user      | `redmine`       | User for database access (must exist).                                 |
-| rm_db_pass      | ``              | Password for database access.                                          |
-| rm_db_prod      | `redmined`      | Database used for production environment (must exist).                 |
-| rm_db_dev       | `redmine_devd`  | Database used for development environment (must exist).                |
-| rm_db_testd     | `redmine_testd` | Database used for testing environment (must exist).                    |
+| Variable            | Default         | Description                                                            |
+|---------------------|-----------------|------------------------------------------------------------------------|
+| **rm_version**      | `4.2.3`         | Redmine version to use.                                                |
+| **rm_ruby_version** | `2.7`           | Ruby version to use.                                                   |
+| **rm_user**         | `_redmine`      | The user that will be added to the system in order to run rubywarden.  |
+| **rm_group**        | `_redmine`      | The group that will be added to the system in order to run rubywarden. |
+| **rm_port**         | `8080`          | The port on which to run redmine.                                      |
+| **rm_home**         | `/var/redmine`  | Home directory for rm_user.                                            |
+| **rm_db_adapter**   | `postgresql`    | Which database service to use.                                         |
+| **rm_db_user**      | `redmine`       | User for database access (must exist).                                 |
+| **rm_db_pass**      | `''`            | Password for database access (must be given).                          |
+| **rm_db_prod**      | `redmined`      | Database used for production environment (must exist).                 |
+| **rm_db_dev**       | `redmine_devd`  | Database used for development environment (must exist).                |
+| **rm_db_testd**     | `redmine_testd` | Database used for testing environment (must exist).                    |
 
 
 Running redmine commands

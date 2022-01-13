@@ -1,9 +1,10 @@
 ---
 rm_app_dir: "{{ rm_home }}/app"
-rm_gem_dir: "{{ rm_home }}"
+rm_gem_dir: "{{ rm_home }}/ruby/{{ rm_ruby_version }}"
 rm_bin_dir: "{{ rm_home }}/ruby/bin"
 
 rm_dirs:
+  - "{{ rm_home }}/ruby"
   - "{{ rm_app_dir }}"
   - "{{ rm_gem_dir }}"
   - "{{ rm_bin_dir }}"

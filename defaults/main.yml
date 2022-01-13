@@ -16,6 +16,8 @@ rm_bundle: "/usr/local/bin/bundle{{ rm_ruby_slug }}"
 rm_gem: "/usr/local/bin/gem{{ rm_ruby_slug }}"
 rm_ruby: "/usr/local/bin/ruby{{ rm_ruby_slug }}"
 
+rm_port: 8080
+
 rm_lang: "en"
 
 rm_rebuild: false
