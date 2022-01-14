@@ -8,16 +8,17 @@ Role Variables
 
 The significant variables are listed here for brevity. The full list of variables can be found in [defaults/main.yml].
 
-| Variable            | Default         | Description                                                            |
-|---------------------|-----------------|------------------------------------------------------------------------|
-| **rm_version**      | `4.2.3`         | Redmine version to use.                                                |
-| **rm_port**         | `8080`          | The port on which to run redmine.                                      |
-| **rm_db_adapter**   | `postgresql`    | Which database service to use.                                         |
-| **rm_db_user**      | `redmine`       | User for database access (must exist).                                 |
-| **rm_db_pass**      | `''`            | Password for database access (must be given).                          |
-| **rm_db_prod**      | `redmined`      | Database used for production environment (must exist).                 |
-| **rm_db_dev**       | `redmine_devd`  | Database used for development environment (must exist).                |
-| **rm_db_testd**     | `redmine_testd` | Database used for testing environment (must exist).                    |
+| Variable          | Default         | Description                                             |
+|-------------------|-----------------|---------------------------------------------------------|
+| **rm_version**    | `4.2.3`         | Redmine version to use.                                 |
+| **rm_port**       | `8080`          | The port on which to run redmine.                       |
+| **rm_db_adapter** | `postgresql`    | Which database service to use.                          |
+| **rm_db_user**    | `redmine`       | User for database access (must exist).                  |
+| **rm_db_pass**    | `''`            | Password for database access (must be given).           |
+| **rm_db_prod**    | `redmined`      | Database used for production environment (must exist).  |
+| **rm_db_dev**     | `redmine_devd`  | Database used for development environment (must exist). |
+| **rm_db_testd**   | `redmine_testd` | Database used for testing environment (must exist).     |
+| **rm_rebuild**    | `false`         | Force rebuild plugin and config databases.              |
 
 
 RC scripts
