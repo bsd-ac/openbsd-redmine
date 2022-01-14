@@ -90,6 +90,14 @@
   become_user: "{{ rm_user }}"
   when: git_updated.changed or db_updated.changed or bundle_updated.changed or secret_updated.changed or rm_rebuild
 
+- name: migrate plugins
+  command: "env RAILS_ENV=production REDMINE_LANG={{ rm_lang }} GEM_HOME={{ rm_gem_dir }} {{ rm_bundle }} exec rake redmine:plugins:migrate"
+  args:
+    chdir: "{{ rm_app_dir }}"
+  become: true
+  become_user: "{{ rm_user }}"
+  when: git_updated.changed or db_updated.changed or bundle_updated.changed or secret_updated.changed or rm_rebuild
+
 - name: load default data
   command: "env RAILS_ENV=production REDMINE_LANG={{ rm_lang }} GEM_HOME={{ rm_gem_dir }} {{ rm_bundle }} exec rake redmine:load_default_data"
   args:
