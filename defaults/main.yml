@@ -33,3 +33,8 @@ rm_db_host: "localhost"
 rm_db_prod: "redmined"
 rm_db_dev: "redmine_devd"
 rm_db_test: "redmine_testd"
+
+rm_databases:
+  - '{{ rm_db_prod }}'
+  - '{{ rm_db_dev }}'
+  - '{{ rm_db_test }}'

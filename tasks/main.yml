@@ -57,6 +57,20 @@
     - migrate plugins
     - load default data
 
+- name: create postgresql user
+  postgresql_user:
+    name: redmine
+    password: '{{ rm_db_pass }}'
+
+- name: create postgresql databases
+  postgresql_db:
+    name: '{{ item }}'
+    owner: redmine
+    encoding: UTF-8
+    template: template0
+  register: _davical_initdb
+  with_items: '{{ rm_databases }}'
+
 - name: create local gemfile
   copy:
     src: Gemfile.local
@@ -112,3 +126,40 @@
   with_items:
     - "redmine_unicorn"
     - "redmine_puma"
+
+- name: flush_handlers
+  meta: flush_handlers
+
+- name: decrypt db
+  command: "env RAILS_ENV=production GEM_HOME={{ rm_gem_dir }} {{ rm_bundle }} exec rake db:decrypt"
+  args:
+    chdir: "{{ rm_app_dir }}"
+  become: true
+  become_user: "{{ rm_user }}"
+
+- name: delete auth_source with id 1
+  postgresql_query:
+    db: '{{ rm_db_prod }}'
+    query: 'DELETE FROM auth_sources WHERE id = 1'
+
+- name: create LDAP auth source
+  postgresql_query:
+    db: '{{ rm_db_prod }}'
+    query: "INSERT INTO auth_sources(id, type, name, host, port, account, account_password, base_dn, attr_login, attr_firstname, attr_lastname, attr_mail, onthefly_register, tls, verify_peer) VALUES(1, 'AuthSourceLdap', 'BSDHomeLab', '127.0.0.1', 389, '{{ admin_dn }}', '{{ admin_passwd }}', '{{ openldap_base }}', 'mail', 'givenName', 'sn', 'mail', 't', 'f', 'f')"
+
+- name: update admin user to use LDAP
+  postgresql_query:
+    db: '{{ rm_db_prod }}'
+    query: "UPDATE users SET login = 'admin@{{ domain }}', hashed_password = '', auth_source_id = 1 WHERE id = 1"
+
+- name: update admin user email
+  postgresql_query:
+    db: '{{ rm_db_prod }}'
+    query: "UPDATE email_addresses SET address = 'admin@{{ domain }}' WHERE user_id = 1"
+
+- name: encrypt db
+  command: "env RAILS_ENV=production GEM_HOME={{ rm_gem_dir }} {{ rm_bundle }} exec rake db:decrypt"
+  args:
+    chdir: "{{ rm_app_dir }}"
+  become: true
+  become_user: "{{ rm_user }}"
